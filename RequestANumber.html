@@ -59,6 +59,7 @@ function hexToBytes(hexstr){
 	return bytes;
 }
 
+//a simple polyalphabetic substitution cipher
 function decryptHexToString(str, key){
 	key = key.substring(32,64) + key.substring(0,32);
 	debug(key);

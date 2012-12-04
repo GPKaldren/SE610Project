@@ -103,6 +103,7 @@
 		return $bytes;
 	}
 	
+	//a simple polyalphabetic substitution cipher
 	function encryptStringToHex($str, $key){
 		$key = substr($key, 32, 32) . substr($key, 0, 32);
 		$key = hash("sha256", $key);
