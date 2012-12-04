@@ -1,0 +1,101 @@
+<html>
+<body>
+<script src="sha256.js"></script>
+<script>
+function dosubmit () {
+	var form = document.getElementById('userinfo_form');
+    var username = form.username.value;
+	var password = form.password.value;
+	var passhash = ""+CryptoJS.SHA256(password);
+	var doubhash = CryptoJS.SHA256(passhash);
+	var url = "GenerateANumber.php?username="+escape(username)+"&passhash="+doubhash;
+	var response = httpGet(url);
+	if( response.substring(0,3)==="999" ){
+		document.getElementById("submit").disabled = true;
+		var plaintext = decryptHexToString(response.substring(5,85), passhash);
+		document.getElementById('number').innerHTML="Your Voter Number is: " + plaintext;
+	}
+	else {
+		document.getElementById('number').innerHTML="ERROR: " + response;//.substring(5);
+	}
+}
+
+function httpGet(theUrl)
+{
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.open( "GET", theUrl, false );
+	xmlHttp.send( null );
+	return xmlHttp.responseText.toString();
+}
+
+//converts an array of bytes into a string
+function pack(bytes) {
+    var str = "";
+    for(var i = 0; i < bytes.length; i += 2) {
+        var ch = bytes[i] << 8;
+        ch |= bytes[i + 1];
+        str += String.fromCharCode(ch);
+    }
+    return str;
+}
+
+//converts a string into an array of bytes
+function unpack(str) {
+    var bytes = [];
+    for(var i = 0; i < str.length; i++) {
+        var char = str.charCodeAt(i);
+        bytes.push(char >>> 8);
+        bytes.push(char & 0xFF);
+    }
+    return bytes;
+}
+
+//converts a hex string into an array of bytes
+function hexToBytes(hexstr){
+	var bytes = [];
+	for (var i = 0; i < hexstr.length; i += 2) {
+		bytes.push(parseInt("0x" + hexstr.substr(i, 2)));
+	}
+	return bytes;
+}
+
+function decryptHexToString(str, key){
+	key = key.substring(32,64) + key.substring(0,32);
+	debug(key);
+	key = ""+CryptoJS.SHA256(key);
+	debug(key);
+	key = ""+CryptoJS.SHA256(key);
+	debug(key);
+	var k = hexToBytes(key);
+	var m_ = hexToBytes(str);
+	var m = [];
+	for(var i = 0; i < m_.length; i++){
+		m.push(m_[i] ^ k[i%32]);
+		debug(m[i]);
+	}
+	return pack(m);
+}
+
+function debug(str){
+	//document.getElementById('debug').innerHTML += str + "<br>";
+}
+
+</script>
+Request a Number:
+<FORM NAME="userinfo" id="userinfo_form" ACTION="" METHOD="GET">
+You may only submit a request once, so be sure to write down your number once you get it. <BR>
+Your username is your first and last name followed by your date of birth as MMDDYYYY. <BR>
+For example 'johndoe01031990' is the username for John Doe born January 3rd, 1990<BR>
+Your password is your social security number. <P>
+Username:
+<INPUT TYPE="text" NAME="username" VALUE="ernestkirstein11271990"><P>
+Password:
+<INPUT TYPE="password" NAME="password" VALUE="314159265"><P>
+<INPUT TYPE="button" NAME="button" id="submit" Value="Submit Request" onClick="dosubmit()">
+</FORM>
+<p id="number"> </p>
+<!--
+<p id="debug"> Debug: <br></p>
+<!-- -->
+</body>
+</html>
