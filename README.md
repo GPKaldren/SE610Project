@@ -1,1 +1,2 @@
-First Commit 
+You'll need to configure addaccount.php and resetaccount.php for your own account: change the $username and $password variables at the top of each.
+Also, add a user to the database with full privlages (clilck "select all" in the dialog), a username "ejk314" and a password "password".

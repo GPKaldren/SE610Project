@@ -7,13 +7,13 @@ function dosubmit () {
     var username = form.username.value;
 	var password = form.password.value;
 	var passhash = ""+CryptoJS.SHA256(password);
-	var doubhash = CryptoJS.SHA256(passhash);
+	var doubhash = ""+CryptoJS.SHA256(passhash);
 	var url = "GenerateANumber.php?username="+escape(username)+"&passhash="+doubhash;
 	var response = httpGet(url);
 	if( response.substring(0,3)==="999" ){
 		document.getElementById("submit").disabled = true;
 		var plaintext = decryptHexToString(response.substring(5,85), passhash);
-		document.getElementById('number').innerHTML="Your Voter Number is: " + plaintext;
+		document.getElementById('number').innerHTML="Your Voter Registration Number is: " + plaintext;
 	}
 	else {
 		document.getElementById('number').innerHTML="ERROR: " + response;//.substring(5);

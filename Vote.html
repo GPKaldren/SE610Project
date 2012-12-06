@@ -1,0 +1,171 @@
+<html>
+<body>
+<script src="sha256.js"></script>
+<script>
+
+
+function menuchange(){
+	var menu = document.getElementById("menu");
+	if(menu.value==="Other"){
+		document.getElementById("other_box").disabled = false;
+	}
+	else{
+		document.getElementById("other_box").disabled = true;
+	}
+}
+
+function dosubmit () {
+	var number = document.getElementById('number').value;
+	if(number.length != 20){
+		setResult("Invalid User Registration Number");
+		return;
+	}
+	var id = number.substring(0,10);
+	var password = number.substring(10);
+	var passhash = ""+CryptoJS.SHA256(password);
+	var doubhash = ""+CryptoJS.SHA256(passhash);
+	debug(passhash);
+	var vote = escape(getVote());
+	if(vote == null){
+		setResult("Please Actually Select a Canidate");
+		return;
+	}
+	var securevote = encryptStringToHex(vote, passhash);
+	debug("Vote: " + vote);
+	debug("Secure Vote: " + securevote);
+	var url = "CastVote.php?id="+escape(id)+"&passhash="+doubhash+"&vote="+securevote;
+	var response = httpGet(url);
+	if( response.substring(0,3)==="999" ){
+		document.getElementById("submit").disabled = true;
+		setResult("Your vote has been cast successfully!");
+		debug(response);
+	}
+	else {
+		setResult("ERROR: " + response);
+	}
+}
+
+function getVote(){
+	var menu = document.getElementById("menu");
+	if(menu.value === "Other")
+		return document.getElementById("other_box").value;
+	if(menu.value === "X")
+		return null;
+	return menu.value;
+}
+
+function httpGet(theUrl)
+{
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.open( "GET", theUrl, false );
+	xmlHttp.send( null );
+	return xmlHttp.responseText.toString();
+}
+
+//converts an array of bytes into a string
+function pack(bytes) {
+    var str = "";
+    for(var i = 0; i < bytes.length; i += 2) {
+        var ch = bytes[i] << 8;
+        ch |= bytes[i + 1];
+        str += String.fromCharCode(ch);
+    }
+    return str;
+}
+
+//converts a string into an array of bytes
+function unpack(str) {
+    var bytes = [];
+    for(var i = 0; i < str.length; i++) {
+        var char = str.charCodeAt(i);
+        bytes.push(char >>> 8);
+        bytes.push(char & 0xFF);
+    }
+    return bytes;
+}
+
+//converts a hex string into an array of bytes
+function hexToBytes(hexstr){
+	var bytes = [];
+	for (var i = 0; i < hexstr.length; i += 2) {
+		bytes.push(parseInt("0x" + hexstr.substr(i, 2)));
+	}
+	return bytes;
+}
+
+//converts a hex string into an array of bytes
+function bytesToHex(bytes){
+	var hexstr = "";
+	for (var i = 0; i < bytes.length; i++) {
+		if(bytes[i]<16)
+			hexstr = hexstr + "0";
+		hexstr = hexstr + bytes[i].toString(16);
+	}
+	return hexstr;
+}
+
+//a simple polyalphabetic substitution cipher
+function encryptStringToHex(str, key){
+	key = key.substring(32,64) + key.substring(0,32);
+	debug(key);
+	key = ""+CryptoJS.SHA256(key);
+	debug(key);
+	key = ""+CryptoJS.SHA256(key);
+	debug(key);
+	var k = hexToBytes(key);
+	var m = unpack(str);
+	var m_ = [];
+	for(var i = 0; i < m.length; i++){
+		m_.push(m[i] ^ k[i%32]);
+		debug(m_[i]);
+	}
+	return bytesToHex(m_);
+}
+
+//a simple polyalphabetic substitution cipher
+function decryptHexToString(str, key){
+	key = key.substring(32,64) + key.substring(0,32);
+	debug(key);
+	key = ""+CryptoJS.SHA256(key);
+	debug(key);
+	key = ""+CryptoJS.SHA256(key);
+	debug(key);
+	var k = hexToBytes(key);
+	var m_ = hexToBytes(str);
+	var m = [];
+	for(var i = 0; i < m_.length; i++){
+		m.push(m_[i] ^ k[i%32]);
+		debug(m[i]);
+	}
+	return pack(m);
+}
+
+function setResult(str){
+	document.getElementById('result').innerHTML = str;
+}
+
+function debug(str){
+	document.getElementById('debug').innerHTML += str + "<br>";
+}
+
+</script>
+Cast Your Vote!<p>
+<FORM NAME="userinfo" id="userinfo_form" ACTION="" METHOD="GET">
+Voter Registration Number:
+<INPUT TYPE="text" NAME="number" id="number" VALUE="65920293171036563788"><P>
+Canidate:
+<select name="menu" id="menu" onChange="menuchange()">
+<option value="X">Select Candidate</option>
+<option value="Vermin Supreme">Vermin Supreme</option>
+<option value="Mikey Mouse">Mikey Mouse</option>
+<option value="Other">Other:</option>
+</select>
+<INPUT TYPE="text" NAME="other" id="other_box" VALUE="" disabled="disabled"><P>
+<INPUT TYPE="button" NAME="button" id="submit" Value="Cast Vote" onClick="dosubmit()">
+</FORM>
+<p id="result"> </p>
+<!-- -->
+<p id="debug"> Debug: <br></p>
+<!-- -->
+</body>
+</html>
