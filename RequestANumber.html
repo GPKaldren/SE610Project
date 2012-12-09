@@ -1,5 +1,6 @@
 <html>
 <body>
+<a href="Index.html"> Home </a><p>
 <script src="sha256.js"></script>
 <script>
 function dosubmit () {
@@ -13,7 +14,8 @@ function dosubmit () {
 	if( response.substring(0,3)==="999" ){
 		document.getElementById("submit").disabled = true;
 		var plaintext = decryptHexToString(response.substring(5,85), passhash);
-		document.getElementById('number').innerHTML="Your Voter Registration Number is: " + plaintext;
+		document.getElementById('number').innerHTML="Your Voter Registration Number is: " + plaintext +
+		"<p>After writing down your number, you may use it to cast your vote <a href=\"Vote.html\">here</a>.";
 	}
 	else {
 		document.getElementById('number').innerHTML="ERROR: " + response;//.substring(5);
@@ -89,9 +91,9 @@ Your username is your first and last name followed by your date of birth as MMDD
 For example 'johndoe01031990' is the username for John Doe born January 3rd, 1990<BR>
 Your password is your social security number. <P>
 Username:
-<INPUT TYPE="text" NAME="username" VALUE="ernestkirstein11271990"><P>
+<INPUT TYPE="text" NAME="username" VALUE=""><P>
 Password:
-<INPUT TYPE="password" NAME="password" VALUE="314159265"><P>
+<INPUT TYPE="password" NAME="password" VALUE=""><P>
 <INPUT TYPE="button" NAME="button" id="submit" Value="Submit Request" onClick="dosubmit()">
 </FORM>
 <p id="number"> </p>

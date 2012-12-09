@@ -4,16 +4,6 @@
 <script src="sha256.js"></script>
 <script>
 
-function menuchange(){
-	var menu = document.getElementById("menu");
-	if(menu.value==="Other"){
-		document.getElementById("other_box").disabled = false;
-	}
-	else{
-		document.getElementById("other_box").disabled = true;
-	}
-}
-
 function dosubmit () {
 	var number = document.getElementById('number').value;
 	if(number.length != 20){
@@ -24,26 +14,14 @@ function dosubmit () {
 	var password = number.substring(10);
 	var passhash = ""+CryptoJS.SHA256(password);
 	var doubhash = ""+CryptoJS.SHA256(passhash);
-	debug(passhash);
-	var vote = getVote();
-	if(vote == null){
-		setResult("Please Actually Select a Canidate");
-		return;
-	}
-	if(vote.length>32)
-		vote = vote.substring(0,32);
-	//pad the vote with spaces
-	while(vote.length < 32)
-		vote = vote+" ";
-	var securevote = encryptStringToHex(vote, passhash);
-	debug("Vote: '" + vote + "'");
-	debug("Vote.length: " + vote.length);
-	debug("Secure Vote: " + securevote);
-	var url = "CastVote.php?id="+id+"&passhash="+doubhash+"&vote="+securevote;
+	debug("Passhash: " + passhash);
+	var url = "LookupVote.php?id="+id+"&passhash="+doubhash;
 	var response = httpGet(url);
 	if( response.substring(0,3)==="999" ){
+		var vote = response.substring(5,69);
+		vote = decryptHexToString(vote, passhash);
 		document.getElementById("submit").disabled = true;
-		setResult("Your vote has been cast successfully!");
+		setResult("You voted for: " + vote);
 		debug(response);
 	}
 	else {
@@ -155,22 +133,14 @@ function debug(str){
 }
 
 </script>
-Cast Your Vote!<p>
+Lookup your vote:<p>
 <FORM NAME="userinfo" id="userinfo_form" ACTION="" METHOD="GET">
 Voter Registration Number:
 <INPUT TYPE="text" NAME="number" id="number" VALUE=""><P>
-Canidate:
-<select name="menu" id="menu" onChange="menuchange()">
-<option value="X">Select Candidate</option>
-<option value="Vermin Supreme">Vermin Supreme</option>
-<option value="Mikey Mouse">Mikey Mouse</option>
-<option value="Other">Other:</option>
-</select>
-<INPUT TYPE="text" NAME="other" id="other_box" VALUE="" disabled="disabled"><P>
-<INPUT TYPE="button" NAME="button" id="submit" Value="Cast Vote" onClick="dosubmit()">
+<INPUT TYPE="button" NAME="button" id="submit" Value="Lookup" onClick="dosubmit()">
 </FORM>
 <p id="result"> </p>
-<!-- 
+<!--
 <p id="debug"> Debug: <br></p>
 <!-- -->
 </body>
