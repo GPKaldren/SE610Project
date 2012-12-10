@@ -1,7 +1,38 @@
 <html>
+<title>Voter Verification</title>
+<style>
+
+body
+{
+font-size:75%;
+font-family:verdana,arial,'sans serif';
+background-image:url('gradient.png');
+background-repeat:repeat-x;
+background-color:#FFFFF0;
+color:#000080;
+margin:70px;
+}
+
+h1 {font-size:200%;
+text-align:center;}
+h2 {font-size:140%;}
+h3 {font-size:110%;}
+
+th {background-color:#ADD8E6;}
+
+ul {list-style:circle;}
+ol {list-style:upper-roman;}
+
+a:link {color:#000080;}
+a:hover {color:red;}
+</style>
+
 <body>
 <a href="Index.html"> Home </a><p>
 <script src="sha256.js"></script>
+
+<h1>Voter Verification</h1>
+
 <script>
 
 function dosubmit () {
@@ -133,7 +164,11 @@ function debug(str){
 }
 
 </script>
-Lookup your vote:<p>
+
+<h3>Use this page to verify if your vote was sucessfully cast. Simply enter your Voter Registration Number
+and you can see if you have voted or not. You cannot see which canidate you voted for in order to
+protect user privacy. </h3>
+
 <FORM NAME="userinfo" id="userinfo_form" ACTION="" METHOD="GET">
 Voter Registration Number:
 <INPUT TYPE="text" NAME="number" id="number" VALUE=""><P>

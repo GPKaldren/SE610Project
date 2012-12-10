@@ -1,8 +1,8 @@
 <html>
 <body>
 <?php
-	$password = "314159265";
-	$username = "ernestkirstein11271990";
+	$password = "password";
+	$username = "ryancerankowski123456890";
 	$con = mysql_connect("localhost","ejk314","password");
 	if (!$con)
 	 {
